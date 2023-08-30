@@ -133,6 +133,10 @@ end
 function _G.getModule(moduleName)
   return Modules[moduleName];
 end
+---@return {[string]: ModuleBase}
+function _G.getAllLoadedModules()
+  return Modules;
+end
 
 ---@return string|nil
 function _G.findLegacyModuleName(path)

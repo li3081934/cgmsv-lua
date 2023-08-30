@@ -46,9 +46,28 @@ end
 ---@return string
 function Module:reloadModule(params, body)
     self:logInfo("reloadModule", params['module']);
-    reloadModule(params['module']);
-    return "true"
+    return reloadModule(params['module']);
 end
+
+---http://127.0.0.1:10086/api/getAllLoadedModules
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:getAllLoadedModules(params, body)
+    self:logInfo("getAllLoadedModules");
+    local modules = getAllLoadedModules();
+    local nameArr = {};
+    for index, value in ipairs(modules) do
+        table.insert(nameArr, value.name)
+    end
+    local b, ret = pcall(JSON.encode, nameArr);
+    if not b then
+        return ''
+    else 
+        return ret;
+    end
+end
+
 
 ---×¢²áÐÂÓÃ»§ http://127.0.0.1:10086/api/register
 ---@param params ParamType
@@ -112,4 +131,4 @@ function Module:onUnload()
     end
 end
 
-return Module;
+return Module

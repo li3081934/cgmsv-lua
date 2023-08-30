@@ -25,6 +25,7 @@
                 </label>
             </div>
             <button type="button" id="btnRegister" role="button">注册</button>
+            <button type="button" id="getAllModules" role="button">获取运行中的Modules</button>
         </form>
     </div>
     <script>
@@ -43,6 +44,32 @@
                 alert(data == 'true' ? '注册成功' : "注册失败");
             })
         });
+        $('#getAllModules').on('click', function () {
+            $.ajax({
+                type: "POST",
+                url: "/api/getAllLoadedModules",
+                processData: false,
+                contentType: 'application/json',
+                success: function (r) {
+                }
+            }).then(function (data) {
+                console.log(data)
+            })
+        });
+
+
+        function reloadModule(moduleName) {
+            $.ajax({
+                type: "POST",
+                url: `/api/reloadModule?module=${moduleName}`,
+                processData: false,
+                contentType: 'application/json',
+                success: function (r) {
+                }
+            }).then(function (data) {
+                alert(data == 'true' ? '刷新成功' : "刷新失败");
+            })
+        }
     </script>
 </body>
 
