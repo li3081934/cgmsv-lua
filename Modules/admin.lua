@@ -30,11 +30,12 @@ end
 ---@param charIndex CharIndex
 ---@return boolean
 function Admin:isAdmin(charIndex)
-  local cdKey = Char.GetData(charIndex, CONST.CHAR_CDK)
-  if not gmDict[cdKey] then
-    return false
-  end
   return true;
+  -- local cdKey = Char.GetData(charIndex, CONST.CHAR_CDK)
+  -- if not gmDict[cdKey] then
+  --   return false
+  -- end
+  -- return true;
 end
 
 function Admin:handleChat(charIndex, msg, color, range, size)

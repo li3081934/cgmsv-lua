@@ -27,6 +27,7 @@ function Module:onLoad()
     self:regApi('post', "register", Func.bind(self.ApiRegister, self));
     self:regApi('post', "doLua", Func.bind(self.doLua, self));
     self:regApi('post', "reloadModule", Func.bind(self.reloadModule, self));
+    self:regApi('post', "getAllLoadedModules", Func.bind(self.getAllLoadedModules, self));
 end
 
 ---http://127.0.0.1:10086/api/doLua
@@ -46,7 +47,8 @@ end
 ---@return string
 function Module:reloadModule(params, body)
     self:logInfo("reloadModule", params['module']);
-    return reloadModule(params['module']);
+    reloadModule(params['module']);
+    return 'true';
 end
 
 ---http://127.0.0.1:10086/api/getAllLoadedModules
@@ -57,8 +59,9 @@ function Module:getAllLoadedModules(params, body)
     self:logInfo("getAllLoadedModules");
     local modules = getAllLoadedModules();
     local nameArr = {};
-    for index, value in ipairs(modules) do
-        table.insert(nameArr, value.name)
+    
+    for index, value in pairs(modules) do
+        table.insert(nameArr, index)
     end
     local b, ret = pcall(JSON.encode, nameArr);
     if not b then

@@ -17,7 +17,7 @@ local function identity(player)
       local money = Char.GetData(player, CONST.CHAR_金币);
       local itemLv = Item.GetData(ItemIndex, CONST.道具_等级);
       local price = itemLv * 200;
-      if Item.GetData(ItemIndex, CONST.道具_已鉴定) == 0 and money >= (itemLv * 200) then
+      if Item.GetData(ItemIndex, CONST.道具_已鉴定) == 0 and money >= (price) then
         Count = Count + 1
         Char.SetData(player, CONST.CHAR_金币, money - price);
         Item.SetData(ItemIndex, CONST.道具_已鉴定, 1)

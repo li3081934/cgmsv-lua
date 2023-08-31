@@ -26,6 +26,7 @@
             </div>
             <button type="button" id="btnRegister" role="button">注册</button>
             <button type="button" id="getAllModules" role="button">获取运行中的Modules</button>
+            <div id="readyModule"></div>
         </form>
     </div>
     <script>
@@ -53,9 +54,29 @@
                 success: function (r) {
                 }
             }).then(function (data) {
-                console.log(data)
+                data = JSON.parse(data);
+                let navList = '';
+                data.forEach(element => {
+                    navList += `<li><a id=${element}>${element}</a></li>`
+                });
+                $('#readyModule').html( `
+                <aside>
+                <nav>
+                    <ul>
+                    ${navList}
+                    </ul>
+                </nav>
+                </aside>`)
             })
         });
+        $('#reloadHttp').on('click', function () {
+            reloadModule('http')
+        });
+        $('#readyModule').on('click', function (e) {
+           console.log(e.target)
+           reloadModule(e.target.id)
+        });
+
 
 
         function reloadModule(moduleName) {
