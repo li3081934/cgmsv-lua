@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+    <link rel="stylesheet" href="css//card.css" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <script>
+        const { createApp, ref } = Vue
+        const App = {
+            setup() {
+            const message = ref('Hello vue!')
+            return {
+                message
+            }
+            }
+        };
+        const app = Vue.createApp(App);
+        app.use(ElementPlus);
+        
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <el-row :gutter="20">
+            <el-col :span="6"><user-card></user-card></el-col>
+            <el-col :span="6"><user-card></user-card></el-col>
+          </el-row>
+        
+    </div>
+    
+    
+    <script src="js/user-card.js"></script>
+    <script>
+        app.mount("#app");
+    </script>
+</body>
+
+</html>

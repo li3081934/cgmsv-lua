@@ -27,7 +27,11 @@ function Module:onLoad()
     self:regApi('post', "register", Func.bind(self.ApiRegister, self));
     self:regApi('post', "doLua", Func.bind(self.doLua, self));
     self:regApi('post', "reloadModule", Func.bind(self.reloadModule, self));
-    self:regApi('post', "getAllLoadedModules", Func.bind(self.getAllLoadedModules, self));
+    for key, value in pairs(self) do
+        if (string.find(key, 'get') == 1 or string.find(key, 'set') == 1) then
+            self:regApi('post', key, Func.bind(value, self));
+        end
+    end
 end
 
 ---http://127.0.0.1:10086/api/doLua
@@ -70,6 +74,32 @@ function Module:getAllLoadedModules(params, body)
         return ret;
     end
 end
+
+---http://127.0.0.1:10086/api/getAutoBattleChar
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:getAutoBattleChar(params, body)
+    
+end
+
+---http://127.0.0.1:10086/api/setCharStrategy
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:setCharStrategy(params, body)
+    
+end
+
+---http://127.0.0.1:10086/api/getCharSkills
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:getCharSkills(params, body)
+    
+end
+
+
 
 
 ---×¢²áÐÂÓÃ»§ http://127.0.0.1:10086/api/register
