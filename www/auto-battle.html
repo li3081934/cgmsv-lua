@@ -9,27 +9,41 @@
     <link rel="stylesheet" href="css//card.css" />
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/element-plus"></script>
+    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        const { createApp, ref } = Vue
+        const { createApp, ref, reactive, onMounted } = Vue
         const App = {
             setup() {
-            const message = ref('Hello vue!')
-            return {
-                message
-            }
+                const autoBattleChar = ref([{ charIndex: '123', charName: 'abc' }]);
+
+                function refreshChar() {
+                    axios.post('/api/getAutoBattleChar').then(res => {
+                        autoBattleChar.value = res.data;
+                    })
+                }
+                refreshChar();
+                return {
+                    autoBattleChar, refreshChar
+                }
             }
         };
         const app = Vue.createApp(App);
         app.use(ElementPlus);
+        for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+            app.component(key, component)
+        }
         
     </script>
 </head>
 
 <body>
     <div id="app">
+        <div style="font-size: 16px;font-weight: bold;margin: 16px 0;">自动战斗的角色<el-icon class="op-icon" @click="refreshChar"><Refresh /></el-icon></div>
         <el-row :gutter="20">
-            <el-col :span="6"><user-card></user-card></el-col>
-            <el-col :span="6"><user-card></user-card></el-col>
+            <el-col :span="6" v-for="item in autoBattleChar" :key="item.charIndex">
+                <user-card :char-index="item.charIndex" :char-name="item.charName"></user-card>
+            </el-col>
           </el-row>
         
     </div>

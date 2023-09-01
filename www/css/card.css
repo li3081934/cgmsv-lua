@@ -3,3 +3,14 @@
     align-items: center;
     justify-content: space-between;
 }
+
+.list-item + .list-item {
+    margin-top: 16px;
+}
+.op-icon {
+    color: #409EFC;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 16px;
+    vertical-align: middle;
+}
