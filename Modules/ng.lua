@@ -16,7 +16,7 @@ local function identity(player)
     if ItemIndex > 0 then
       local money = Char.GetData(player, CONST.CHAR_金币);
       local itemLv = Item.GetData(ItemIndex, CONST.道具_等级);
-      local price = itemLv * 200;
+      local price = itemLv * 20;
       if Item.GetData(ItemIndex, CONST.道具_已鉴定) == 0 and money >= (price) then
         Count = Count + 1
         Char.SetData(player, CONST.CHAR_金币, money - price);
@@ -161,6 +161,8 @@ function commandsNormal.char(charIndex, args)
     return spriteRepair(charIndex)
   elseif args[1] == 'addFrame' then
     return addFrame(charIndex)
+  elseif args[1] == 'index' then
+    NLG.SystemMessage(charIndex, "[系统] 您的charIndex为" .. charIndex);
   end
 end
 
@@ -176,7 +178,7 @@ function commandsNormal.item(charIndex, args)
   if args[1] == 'sort' then
     NLG.SortItem(charIndex)
     NLG.UpChar(charIndex);
-  elseif args[1] == 'identity' then
+  elseif args[1] == 'id' then
     return identity(charIndex)
   elseif args[1] == 'repair' then
     return repairEquipment(charIndex)
@@ -300,6 +302,16 @@ end
 
 function commandsNormal.bank(player, args)
   NLG.OpenBank(player, player);
+end
+
+function commandsNormal.code(player, args)
+  local fn, err = load('return '..args[1])
+  if fn ~= nil then
+    local res = fn();
+    print('执行结果：' , res)
+    else
+      print('error' , err)
+  end
 end
 
 function ngModule:handleTalkEvent(charIndex, msg)

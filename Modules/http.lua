@@ -27,11 +27,17 @@ function Module:onLoad()
     self:regApi('post', "register", Func.bind(self.ApiRegister, self));
     self:regApi('post', "doLua", Func.bind(self.doLua, self));
     self:regApi('post', "reloadModule", Func.bind(self.reloadModule, self));
-    for key, value in pairs(self) do
-        if (string.find(key, 'get') == 1 or string.find(key, 'set') == 1) then
-            self:regApi('post', key, Func.bind(value, self));
-        end
-    end
+    self:regApi('post', "getAllLoadedModules", Func.bind(self.getAllLoadedModules, self));
+    self:regApi('post', "getAutoBattleChar", Func.bind(self.getAutoBattleChar, self));
+    self:regApi('post', "getCharSkills", Func.bind(self.getCharSkills, self));
+    self:regApi('post', "setCharStrategy", Func.bind(self.setCharStrategy, self));
+    self:regApi('post', "getCharStrategy", Func.bind(self.getCharStrategy, self));
+    self:regApi('post', "autoBattleStop", Func.bind(self.autoBattleStop, self));
+    -- for key, value in pairs(self) do
+    --     if (string.find(key, 'get') == 1 or string.find(key, 'set') == 1) then
+    --         self:regApi('post', key, Func.bind(value, self));
+    --     end
+    -- end
 end
 
 ---http://127.0.0.1:10086/api/doLua
@@ -80,7 +86,14 @@ end
 ---@param body string
 ---@return string[]
 function Module:getAutoBattleChar(params, body)
-    
+    local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
+    local data = autoModule:getAutoBattleChars();
+    local resData = {};
+    for key, value in pairs(data) do
+        table.insert(resData, value)
+    end
+    local res = self:response(true, resData)
+    return res
 end
 
 ---http://127.0.0.1:10086/api/setCharStrategy
@@ -88,7 +101,23 @@ end
 ---@param body string
 ---@return string[]
 function Module:setCharStrategy(params, body)
-    
+    local b, ret = pcall(JSON.decode, body);
+    if b ~= true or ret == nil then
+        return self:response(false);
+    end
+    local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
+    autoModule:setCharStrategy(ret.charIndex, ret.strategy);
+    return self:response(true);
+end
+---http://127.0.0.1:10086/api/getCharStrategy
+function Module:getCharStrategy(params, body)
+    local b, ret = pcall(JSON.decode, body);
+    if b ~= true or ret == nil then
+        return self:response(false);
+    end
+    local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
+    local data = autoModule:getCharStrategy(ret.charIndex);
+    return self:response(true, data)
 end
 
 ---http://127.0.0.1:10086/api/getCharSkills
@@ -96,10 +125,28 @@ end
 ---@param body string
 ---@return string[]
 function Module:getCharSkills(params, body)
-    
+    local b, ret = pcall(JSON.decode, body);
+    if b ~= true or ret == nil then
+        return self:response(false);
+    end
+    local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
+    local data = autoModule:getCharAllowSkill(ret.charIndex);
+    return self:response(true, data);
 end
 
-
+---http://127.0.0.1:10086/api/autoBattleStop
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:autoBattleStop(params, body)
+    local b, ret = pcall(JSON.decode, body);
+    if b ~= true or ret == nil then
+        return self:response(false);
+    end
+    local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
+    autoModule:autoBattleStop(ret.charIndex);
+    return self:response(true);
+end
 
 
 ---注册新用户 http://127.0.0.1:10086/api/register
@@ -154,6 +201,21 @@ end
 ---@param fn HttpApiFn
 function Module:regApi(method, api, fn)
     self._Apis[string.lower(method .. api)] = fn;
+end
+
+---@param success boolean
+---@param message any 
+---@return string
+function Module:response(success, message)
+    local jsonData = { success = success, data = message }
+    local b, ret = pcall(JSON.encode, jsonData);
+    if not b then
+        self:logError('jsonErr', ret)
+        return '';
+    else
+        return ret
+    end
+    
 end
 
 --- 卸载模块钩子

@@ -38,8 +38,8 @@ end
 
 
 if CG then
-  CG.RegCallback('OnChatEvent', 'OnChatEventCallback');   --自动战斗相关
-  CG.RegCallback('OnStartBattleTimerEvent', 'OnStartBattleTimerEventCallback'); --自动战斗相关
+  -- CG.RegCallback('OnChatEvent', 'OnChatEventCallback');   --自动战斗相关
+  -- CG.RegCallback('OnStartBattleTimerEvent', 'OnStartBattleTimerEventCallback'); --自动战斗相关
   CG.RegCallback('CanWatchBattleEvent', 'CanWatchBattleEventCallback'); --城内观战
   CG.DisplayEnemyInfo(); --怪物显血（文字）
   CG.SetGraphicSize(4360000); --Graphic数量
@@ -59,27 +59,21 @@ elseif cg then
 end
 -- CG.RegCallback("OnRecvEvent", "OnRecvEventCallback");
 
-AutoBattle = 0;
+-- function OnChatEventCallback(str, type)
+--   if str == '/autoBattle on' then
+--       CG.LocalMsg("自动战斗开启", 0, 0);
+--       return 1;
+--   end
+--   if str == '/autoBattle off' then
+--       CG.LocalMsg("自动战斗关闭", 0, 0);
+--       return 1;
+--   end
+-- end
 
-function OnChatEventCallback(str, type)
-  if str == '/autoBattle on' then
-      AutoBattle = 1;
-      CG.LocalMsg("自动战斗开启", 0, 0);
-      return 1;
-  end
-  if str == '/autoBattle off' then
-      AutoBattle = 0;
-      CG.LocalMsg("自动战斗关闭", 0, 0);
-      return 1;
-  end
-end
-
-function OnStartBattleTimerEventCallback()
-  if AutoBattle == 1 then
-      CG.LocalMsg("AutoBattle", 0, 0);
-      CG.SendProto("AutoBattle");
-  end
-end
+-- function OnStartBattleTimerEventCallback()
+--   CG.LocalMsg("回合开启", 0, 0);
+--   CG.SendProto("AutoBattle");
+-- end
 
 function CanWatchBattleEventCallback(floor)
   return 1;
