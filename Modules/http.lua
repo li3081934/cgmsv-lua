@@ -103,7 +103,7 @@ end
 ---@param body string
 ---@return string[]
 function Module:getOnlineChar(params, body)
-    local onlineModule = getModule('Online')--[[@as Online]]
+    local onlineModule = getModule('onlineChar')--[[@as OnlineCharModule]]
     local data = onlineModule:getOnLineChar();
     return self:response(true, data)
 end

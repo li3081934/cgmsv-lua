@@ -31,6 +31,8 @@ loadModule('loginGate')
 --loadModule('noBattleInjury')
 --loadModule('summonDemo')
 loadModule('setupMagicAttr')
+
+loadModule('onlineChar')
 loadModule('http')
 --loadModule('itembox') --ºÚ°×±¦Ïä¸ÅÂÊµ÷Õûlua
 --loadModule('petBPExtend')

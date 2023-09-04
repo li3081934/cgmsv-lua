@@ -1,17 +1,3 @@
-const SKILL_ID_NAME_MAP = {
-  3: '乾坤一掷',
-  5: '崩击',
-  19: '陨石魔法',
-  20: '冰冻魔法',
-  21: '火焰魔法',
-  22: '风刃魔法',
-  23: '强力陨石魔法',
-  24: '强力冰冻魔法',
-  25: '强力火焰魔法',
-  26: '强力风刃魔法',
-  95: '乱射'
-
-}
 app.component('userCard', {
   props: ['charIndex', 'charName'],
   setup(props, ctx) {
@@ -48,27 +34,20 @@ app.component('userCard', {
     }
     function updateCharSkillList() {
       console.log('update skill')
-      axios.post('/api/getCharSkills', { charIndex: charIndex })
+      axios.post('/api/getCharSkills', { charIndex: charIndex }, {responseType: 'blob'})
       .then(res => {
-        const skillNames = res.data.data.map(item.skillName)
-        return strToUtf8([skillNames]).then(utfStr => {
-          console.log(res)
-          utfStr.forEach((str, index) => {
-            res.data.data[index].skillName = str
-          })
-          return res
-        })
-
+        return parseGb18030Json(res)
       })
       .then(res => {
         console.log(res)
         const skillGroup = {}
-        res.data.data.map(item => {
+        res.data.map(item => {
           if (skillGroup[item.skillId]) {
             skillGroup[item.skillId].children.push(item)
           } else {
+            const groupNameMatch = item.skillName.match(/\p{Unified_Ideograph}+/ug);
             skillGroup[item.skillId] = { 
-              skillName: SKILL_ID_NAME_MAP[item.skillId] || '未定义技能名字', 
+              skillName: groupNameMatch ? groupNameMatch[0] : '未匹配的名字', 
               skillId: item.skillId,
               children: [item]
             }
@@ -152,7 +131,7 @@ app.component('userCard', {
         <el-option
           v-for="item in group.children"
           :key="item.techId"
-          :label="item.skillName + ' ' + group.skillName"
+          :label="item.skillName"
           :value="item.techId"
         />
       </el-option-group>
