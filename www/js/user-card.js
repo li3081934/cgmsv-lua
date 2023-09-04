@@ -48,7 +48,19 @@ app.component('userCard', {
     }
     function updateCharSkillList() {
       console.log('update skill')
-      axios.post('/api/getCharSkills', { charIndex: charIndex }).then(res => {
+      axios.post('/api/getCharSkills', { charIndex: charIndex })
+      .then(res => {
+        const skillNames = res.data.data.map(item.skillName)
+        return strToUtf8([skillNames]).then(utfStr => {
+          console.log(res)
+          utfStr.forEach((str, index) => {
+            res.data.data[index].skillName = str
+          })
+          return res
+        })
+
+      })
+      .then(res => {
         console.log(res)
         const skillGroup = {}
         res.data.data.map(item => {
@@ -103,7 +115,6 @@ app.component('userCard', {
       strategyData.skillId = target ? target.skillId : -1
     }
     onMounted(() => {
-      console.log(props.charIndex)
       getCharStrategy()
     })
     return { strategyData, battleOptions, skillList, actionTypeChange, onUpdateStrategy, updateCharSkillList, props, onSelectSkill, autoBattleStop }
@@ -141,7 +152,7 @@ app.component('userCard', {
         <el-option
           v-for="item in group.children"
           :key="item.techId"
-          :label="item.skillName + group.skillName"
+          :label="item.skillName + ' ' + group.skillName"
           :value="item.techId"
         />
       </el-option-group>

@@ -27,7 +27,7 @@ local techFieldMap = {
 --- 加载模块钩子
 function Module:onLoad()
   self:logInfo('load')
-  self:regCallback('TalkEvent', Func.bind(self.handleTalkEvent, self));
+  -- self:regCallback('TalkEvent', Func.bind(self.handleTalkEvent, self));
   self:regCallback('LogoutEvent', Func.bind(self.LogoutEvent, self));
   self:regCallback("ProtocolOnRecv", function(fd, head, list)
     -- self:logDebugF("AutoBattle %d %s", fd, head);
@@ -91,6 +91,10 @@ function Module:getBattleActionCom(charIndex, strategy, enemyslotTable)
         com3 = strategy.techId;
       end
     end
+    if strategy.actionType == 'guard' then
+      com1 = CONST.BATTLE_COM.BATTLE_COM_GUARD;
+      com3 = -1;
+    end
     return com1, com2, com3
 end
 
@@ -149,10 +153,9 @@ function Module:getCharAllowSkill(charIndex)
     local skillId = Char.GetSkillID(charIndex, i);
     if skillId >= 0 and allowSkillTable[skillId] and skillStore[skillId] then
       local baseTechId = skillStore[skillId]
-      local skillSlot = Char.HaveSkill(charIndex, skillId);
-      local maxSkillLevel = Char.GetSkillLv(charIndex,skillSlot) - 1;
-      for i = 0, maxSkillLevel, 1 do
-        table.insert(res, techStore[baseTechId + i] )
+      local maxSkillLevel = Char.GetSkillLv(charIndex, i) - 1;
+      for j = 0, maxSkillLevel, 1 do
+        table.insert(res, techStore[baseTechId + j] )
       end
     end
   end
@@ -164,7 +167,7 @@ function ModuleBase:setCharStrategy(charIndex, strategyData)
   self:logDebug('战斗策略更新', charIndex, JSON.encode(strategyData));
 end
 
-function ModuleBase:getCharStrategy(charIndex, strategyData) 
+function ModuleBase:getCharStrategy(charIndex) 
   return charBattleStrategy[charIndex]
 end
 

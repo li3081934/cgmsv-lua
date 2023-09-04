@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
     <link rel="stylesheet" href="css/card.css" />
+    <script src="js/gb18030ToUtf8.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/element-plus"></script>
     <script src="https://unpkg.com/@element-plus/icons-vue"></script>
@@ -16,15 +17,75 @@
         const App = {
             setup() {
                 const autoBattleChar = ref([]);
+                const onLineChar = ref([]);
 
-                function refreshChar() {
+                function getAutoBattleChar() {
                     axios.post('/api/getAutoBattleChar').then(res => {
                         autoBattleChar.value = res.data.data;
+                        refreshOnlineStatus()
                     })
                 }
-                refreshChar();
+
+                function getOnlineChar() {
+                    axios.post('/api/getOnlineChar').then(res => {
+                        onLineChar.value = res.data.data;
+                        refreshOnlineStatus()
+                    })
+                }
+                function refreshOnlineStatus() {
+                    if (!onLineChar.value.length) {
+                        return;
+                    }
+                    onLineChar.value = onLineChar.value.map(item => {
+                        return {
+                            ...item, 
+                            autoBattle: autoBattleChar.value.find(char => char.charIndex === item.charIndex) ? 1 : 0
+                        }
+                    })
+                }
+
+                function autoBattleStop() {
+                    axios.post('/api/autoBattleStop', { charIndex: charIndex }).then(res => {
+                        if (res.data.success) {
+                            ElementPlus.ElNotification({
+                                title: 'Success',
+                                message: '停止成功',
+                                type: 'success',
+                            })
+                            getAutoBattleChar();
+                        }
+                    })
+                }
+
+                function autoBattleStart() {
+                    axios.post('/api/autoBattleStart', { charIndex: charIndex }).then(res => {
+                        if (res.data.success) {
+                            ElementPlus.ElNotification({
+                                title: 'Success',
+                                message: '开启成功',
+                                type: 'success',
+                            })
+                            getAutoBattleChar();
+                        }
+                    })
+                }
+
+                function onChangeAutoBattle(char, val) {
+                    char.autoBattle = char ? 1 : 0;
+                    if (val) {
+                        autoBattleStart();
+                    } else {
+                        autoBattleStop();
+                    }
+
+                }
+                
+                onMounted(() => {
+                    getAutoBattleChar();
+                    getOnlineChar();
+                })
                 return {
-                    autoBattleChar, refreshChar
+                    autoBattleChar, getAutoBattleChar, getOnlineChar, onLineChar, onChangeAutoBattle
                 }
             }
         };
@@ -39,10 +100,21 @@
 
 <body>
     <div id="app">
-        <div style="font-size: 16px;font-weight: bold;margin: 16px 0;">自动战斗的角色<el-icon class="op-icon" @click="refreshChar"><Refresh /></el-icon></div>
+        <div class="list-title">在线的角色<el-icon class="op-icon" @click="getOnlineChar"><Refresh /></el-icon></div>
+        <el-table :data="onLineChar" style="width: 100%" border>
+            <el-table-column prop="charIndex" label="Char Index"  />
+            <el-table-column prop="charName" label="名字" />
+            <el-table-column label="自动战斗开关">
+                <template #default="scope">
+                  <nz-switch [ngModel]="scope.row.autoBattle === 1" @change="(val) =>onChangeAutoBattle(scope.row, val)" nzCheckedChildren="开" nzUnCheckedChildren="关"></nz-switch>
+                </template>
+              </el-table-column>
+            
+        </el-table>
+        <div class="list-title">自动战斗的角色<el-icon class="op-icon" @click="getAutoBattleChar"><Refresh /></el-icon></div>
         <el-row :gutter="16">
             <el-col style="margin-bottom: 16px;" :xs="24" :sm="12" :md="12" :lg="8" :xl="6" v-for="item in autoBattleChar" :key="item.charIndex">
-                <user-card :char-index="item.charIndex" :char-name="item.charName" @refresh-char="refreshChar"></user-card>
+                <user-card :char-index="item.charIndex" :char-name="item.charName" @refresh-char="getAutoBattleChar"></user-card>
             </el-col>
           </el-row>
         

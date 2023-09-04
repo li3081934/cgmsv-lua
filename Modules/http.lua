@@ -33,6 +33,8 @@ function Module:onLoad()
     self:regApi('post', "setCharStrategy", Func.bind(self.setCharStrategy, self));
     self:regApi('post', "getCharStrategy", Func.bind(self.getCharStrategy, self));
     self:regApi('post', "autoBattleStop", Func.bind(self.autoBattleStop, self));
+    self:regApi('post', "autoBattleStart", Func.bind(self.autoBattleStart, self));
+    self:regApi('post', "getOnlineChar", Func.bind(self.getOnlineChar, self));
     -- for key, value in pairs(self) do
     --     if (string.find(key, 'get') == 1 or string.find(key, 'set') == 1) then
     --         self:regApi('post', key, Func.bind(value, self));
@@ -96,6 +98,16 @@ function Module:getAutoBattleChar(params, body)
     return res
 end
 
+---http://127.0.0.1:10086/api/getOnlineChar
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:getOnlineChar(params, body)
+    local onlineModule = getModule('Online')--[[@as Online]]
+    local data = onlineModule:getOnLineChar();
+    return self:response(true, data)
+end
+
 ---http://127.0.0.1:10086/api/setCharStrategy
 ---@param params ParamType
 ---@param body string
@@ -145,6 +157,20 @@ function Module:autoBattleStop(params, body)
     end
     local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
     autoModule:autoBattleStop(ret.charIndex);
+    return self:response(true);
+end
+
+---http://127.0.0.1:10086/api/autoBattleStart
+---@param params ParamType
+---@param body string
+---@return string[]
+function Module:autoBattleStart(params, body)
+    local b, ret = pcall(JSON.decode, body);
+    if b ~= true or ret == nil then
+        return self:response(false);
+    end
+    local autoModule = getModule('charAutoBattle')--[[@as CharAutoBattle]]
+    autoModule:autoBattleStart(ret.charIndex);
     return self:response(true);
 end
 

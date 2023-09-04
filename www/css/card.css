@@ -14,3 +14,8 @@
     font-size: 16px;
     vertical-align: middle;
 }
+.list-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 16px 0;
+}
