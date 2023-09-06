@@ -3,17 +3,17 @@
 local Module = ModuleBase:createModule('charAutoBattle')
 local autoBattleCharStore = {};
 local allowSkillTable = {
-  [3] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_PARAMETER },
-  [5] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_GUARDBREAK },
-  [19] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [20] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [21] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [22] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [23] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [24] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [25] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [26] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC },
-  [95] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_RANDOMSHOT },
+  [3] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_PARAMETER, side = 1, range = 0 },
+  [5] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_GUARDBREAK, side = 1, range = 0 },
+  [19] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 0 },
+  [20] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 0 },
+  [21] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 0 },
+  [22] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 0 },
+  [23] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 1},
+  [24] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 1 },
+  [25] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 1 },
+  [26] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_MAGIC, side = 1, range = 1 },
+  [95] = { skillType = CONST.BATTLE_COM.BATTLE_COM_P_RANDOMSHOT, side = 1, range = 0 },
 }
 local charBattleStrategy = {};
 local techStore = {};
@@ -65,9 +65,10 @@ function Module:onLoad()
     p = math.fmod(p + 5, 10);
     p = Battle.GetPlayer(Battle.GetCurrentBattle(charIndex), p) or -1;
     if p >= 0 then
-      Battle.ActionSelect(p, CONST.BATTLE_COM.BATTLE_COM_ATTACK, CONST.BATTLE_COM_TARGETS.SINGLE.SIDE_1.POS_0, -1);
+      local pcom1, pcom2, pcom3 = self:getBattleActionCom(charIndex, { actionType = strategy.petActionType }, enemyslotTable);
+      Battle.ActionSelect(p, pcom1, pcom2, pcom3);
     else
-      Battle.ActionSelect(charIndex, CONST.BATTLE_COM.BATTLE_COM_ATTACK, CONST.BATTLE_COM_TARGETS.SINGLE.SIDE_1.POS_0, -1);
+      Battle.ActionSelect(charIndex, com1, com2, com3);
     end
   end, "AutoBattle")
   self:readTechFile();
@@ -89,6 +90,12 @@ function Module:getBattleActionCom(charIndex, strategy, enemyslotTable)
       if charMana >= targetTech.manaCost then
         com1 = allowSkill.skillType;
         com3 = strategy.techId;
+        if allowSkill.range == 1 then
+          com2 = com2 + 20
+        end
+        if allowSkill.range == 2 then
+          com2 = 41 
+        end
       end
     end
     if strategy.actionType == 'guard' then
@@ -182,7 +189,8 @@ function ModuleBase:autoBattleStart(charIndex)
     autoBattleCharStore[charIndex] = {charIndex = charIndex, charName = charName};
     charBattleStrategy[charIndex] = {
       actionType = 'attack',
-      levelOneStop = true
+      levelOneStop = true,
+      petActionType = 'attack'
     }
   end
 end

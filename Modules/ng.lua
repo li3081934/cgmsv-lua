@@ -166,6 +166,16 @@ function commandsNormal.char(charIndex, args)
   end
 end
 
+-- function walkSpeed()
+--   local charPtr = Char.GetCharPointer(player);
+--   if(msg=="/on")then
+--     ffi.setMemoryInt32(charPtr + 0x5e8 + 0x188 + 0x18, 200);
+--   elseif (msg =="/off") then
+--     ffi.setMemoryInt32(charPtr + 0x5e8 + 0x188 + 0x18, 100)
+--   end
+--   NLG.UpChar(player);
+-- end
+
 -- function commandsNormal.rank4(charIndex)
 --   if Char.GetData(charIndex, CONST.CHAR_职阶) == 3 and Char.GetData(charIndex, CONST.CHAR_等级) >= 100 then
 --     Char.SetData(charIndex, CONST.CHAR_职阶, 4);
