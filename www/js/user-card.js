@@ -7,12 +7,17 @@ app.component('userCard', {
       actionType: 'attack',
       levelOneStop: true,
       techId: -1,
-      skillId: -1
+      skillId: -1,
+      petActionType: 'attack'
     })
     const battleOptions = [
       { label: '普攻优先', value: 'attack' },
       { label: '技能优先', value: 'skill' },
       { label: '治疗优先', value: 'health'},
+      { label: '防御', value: 'guard' },
+    ]
+    const petBattleOptions = [
+      { label: '普攻优先', value: 'attack' },
       { label: '防御', value: 'guard' },
     ]
     function actionTypeChange(value) {
@@ -96,7 +101,10 @@ app.component('userCard', {
     onMounted(() => {
       getCharStrategy()
     })
-    return { strategyData, battleOptions, skillList, actionTypeChange, onUpdateStrategy, updateCharSkillList, props, onSelectSkill, autoBattleStop }
+    return { strategyData, battleOptions, skillList, actionTypeChange, 
+      onUpdateStrategy, updateCharSkillList, props, onSelectSkill, autoBattleStop,
+      petBattleOptions
+    }
   },
     template: `
     <el-card class="box-card">
@@ -105,10 +113,13 @@ app.component('userCard', {
       <span>{{props.charName}}</span>
         <div>
             <el-button class="button" type="primary" @click="onUpdateStrategy">更新策略</el-button>
-            <el-button class="button" @click="autoBattleStop">关闭自动战斗</el-button>
+            <el-button class="button" @click="autoBattleStop" :title="关闭自动战斗">关闭自动战斗</el-button>
         </div>
       </div>
     </template>
+    <div class="sub-title">
+      角色
+    </div> 
     <div class="list-item">
       <span class="label">攻击方式：</span>
       <el-select v-model="strategyData.actionType" @change="actionTypeChange"  placeholder="Select">
@@ -139,12 +150,25 @@ app.component('userCard', {
       </el-select>
       <el-icon class="op-icon" @click="updateCharSkillList"><Refresh /></el-icon>
     </div>
+    <div class="sub-title">
+      宠物
+    </div>
+    <div class="list-item">
+      <span class="label">攻击方式：</span>
+      <el-select v-model="strategyData.petActionType" placeholder="Select">
+          <el-option
+          v-for="item in petBattleOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+          />
+      </el-select>
+    </div>
     <div class="list-item">
       <span class="label">遇到1级停手：</span>
       <el-checkbox v-model="strategyData.levelOneStop" />
     </div>
     </el-card>
-        
     
     `
   })

@@ -23,7 +23,7 @@ loadModule('autoUnlock')
 loadModule('bag')
 -- loadModule('autoBattle')
 -- loadModule('autoBattleMy')
-loadModule('charAutoBattle')
+
 loadModule('manaPool')
 loadModule('loginGate')
 --loadModule('bankExpand')
@@ -31,7 +31,7 @@ loadModule('loginGate')
 --loadModule('noBattleInjury')
 --loadModule('summonDemo')
 loadModule('setupMagicAttr')
-
+loadModule('charAutoBattle')
 loadModule('onlineChar')
 loadModule('http')
 --loadModule('itembox') --ºÚ°×±¦Ïä¸ÅÂÊµ÷Õûlua
