@@ -164,7 +164,7 @@ app.component('userCard', {
           />
       </el-select>
     </div>
-    <div class="list-item">
+    <div class="list-item" style="padding-left: 0">
       <span class="label">遇到1级停手：</span>
       <el-checkbox v-model="strategyData.levelOneStop" />
     </div>

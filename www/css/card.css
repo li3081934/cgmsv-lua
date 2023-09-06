@@ -3,9 +3,11 @@
     align-items: center;
     justify-content: space-between;
 }
-
+.list-item {
+    padding-left: 12px;
+}
 .list-item + .list-item {
-    margin-top: 16px;
+    margin-top: 12px;
 }
 .op-icon {
     color: #409EFC;
@@ -18,4 +20,12 @@
     font-size: 16px;
     font-weight: bold;
     margin: 16px 0;
+}
+.sub-title {
+    color: #878e84;
+    margin-bottom: 8px;
+}
+
+.list-item + .sub-title {
+    margin-top: 16px;
 }

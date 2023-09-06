@@ -34,6 +34,7 @@ loadModule('setupMagicAttr')
 loadModule('charAutoBattle')
 loadModule('onlineChar')
 loadModule('http')
+loadModule('framItem')
 --loadModule('itembox') --ºÚ°×±¦Ïä¸ÅÂÊµ÷Õûlua
 --loadModule('petBPExtend')
 --useModule('Welcome2')
