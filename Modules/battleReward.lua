@@ -7,6 +7,8 @@ local Module = ModuleBase:createModule('battleReward')
 --   [5] = 80002
 -- }
 
+local battleEnemyCache = {};
+
 local rewardPool = {
   -- 声望物品
   {
@@ -20,9 +22,9 @@ local rewardPool = {
     }
   },
   {
-    -- 2级装备池 10 - 19级敌人掉落
+    -- 2级装备池 20 - 29级敌人掉落
     dropFilter = function (enemyAvgLevel)
-      return enemyAvgLevel<20 and enemyAvgLevel >= 10
+      return  enemyAvgLevel >= 20 and enemyAvgLevel < 29
     end,
     reward = {
       -- B装 斧 剑 枪 弓 杖 小刀 回旋镖 头盔 帽子 铠甲 衣服 长袍 靴子 鞋子 盾牌
@@ -38,40 +40,50 @@ local missedReward = {}
 function Module:onLoad()
   self:logInfo('load')
   self:regCallback('BattleOverEvent', Func.bind(self.battleOver, self))
+  self:regCallback('BattleStartEvent', Func.bind(self.battleStart, self))
 end
 
 
+function Module:battleStart(battleIndex)
+  local enemyTable = {
+    indexArr = {},
+    totalLevel = 0
+  };
+  for i = 10, 19 do
+    local enemyIndex = Battle.GetPlayer(battleIndex, i);
+    if(enemyIndex >= 0) then
+      table.insert(enemyTable.indexArr, enemyIndex)
+      enemyTable.totalLevel = enemyTable.totalLevel + Char.GetData(enemyIndex, CONST.对象_等级)
+    end
+  end
+  battleEnemyCache[battleIndex] = enemyTable;
+end
+
 function Module:battleOver(battleIndex)
   if Battle.GetType(battleIndex) ~= CONST.战斗_普通 then
+    battleEnemyCache[battleIndex] = nil;
     self:logDebug('战斗类型不是普通')
     return
   end
-  if Battle.GetWinSide(battleIndex) ~= 1 then
+  if Battle.GetWinSide(battleIndex) ~= 0 then
+    battleEnemyCache[battleIndex] = nil;
     self:logDebug('普通战斗没胜利')
     return
   end
-
-  local enemyTable = {}
-  local enemyTotalLevel = 0
-  for i = 10, 19 do
-    local enemyIndex = Battle.GetPlayer(battleIndex, i);
-    if(charIndex >= 0) then
-      table.insert(enemyTable, enemyIndex)
-      enemyTotalLevel = enemyTotalLevel + Char.GetData(enemyIndex, CONST.对象_等级)
-    end
-  end
-  self:logDebug('敌人的平均等级是', math.ceil(enemyTotalLevel / #enemyTable))
+  
+  local enemyData = battleEnemyCache[battleIndex]
   for i=0, 9 do
 		local charIndex = Battle.GetPlayer(battleIndex, i);
 		if(charIndex >= 0) then
 			if Char.IsPlayer(charIndex) then
-        local pickedItems = self:pickItem(math.ceil(enemyTotalLevel / #enemyTable));
+        local pickedItems = self:pickItem(math.ceil(enemyData.totalLevel / #enemyData.indexArr));
         for key, value in pairs(pickedItems) do
           self:giveItem(charIndex, value)
         end
 			end
 		end
 	end
+  battleEnemyCache[battleIndex] = nil;
 end
 
 function Module:pickItem(enemyAvgLevel)
@@ -80,8 +92,6 @@ function Module:pickItem(enemyAvgLevel)
     if pool.dropFilter(enemyAvgLevel) then
       local rand = NLG.Rand(1, 1000);
       for odds, items in pairs(pool.reward) do
-        self:logDebug('掉落概率', odds)
-        self:logDebug('随机数', odds)
         if rand <= odds then
           local randItemIndex = NLG.Rand(1, #items);
             table.insert(picked, items[randItemIndex])
